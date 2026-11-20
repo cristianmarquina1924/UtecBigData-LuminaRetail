@@ -1,0 +1,54 @@
+# ==============================================================================
+# .gitignore - Repositorio Oficial Lumina Retail (UTEC Grupo 7)
+# ==============================================================================
+
+# Credenciales de Google Cloud y Secretos (CRÍTICO DE SEGURIDAD)
+gcp_credentials.json
+*.key
+*.pem
+*.p12
+.env
+.env.*
+!.env.example
+*.secret
+
+# Entornos Virtuales y Caches de Python
+.venv*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Dependencias Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Documentos Binarios y de Ofimática
+*.docx
+*.doc
+*.pdf
+*.pptx
+*.ppt
+*.xlsx
+*.xls
+*.zip
+*.tar.gz
+*.rar
+
+# Archivos Temporales de Sistema Operativo e IDEs
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs de Ejecución
+*.log

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumina Retail · Plataforma de Inteligencia Comercial</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js para visualización de KPIs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Header Corporativo -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-badge">LR</div>
+      <div class="brand-info">
+        <h1>Lumina Retail</h1>
+        <p class="subtitle">Plataforma Corporativa de Inteligencia Comercial · RetailSmart Global Inc.</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text" id="api-status-label">Conectando a BigQuery Gold...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navegación por Pestañas Principales -->
+  <nav class="nav-tabs">
+    <button class="tab-button active" onclick="switchTab('dashboard')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard Comercial
+    </button>
+    <button class="tab-button" onclick="switchTab('agent')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Agente IA (Lulita)
+    </button>
+  </nav>
+
+  <!-- Contenido Principal -->
+  <main class="app-container">
+    
+    <!-- PESTAÑA 1: DASHBOARD COMERCIAL -->
+    <section id="tab-dashboard" class="tab-content active">
+      <!-- Barra de Filtros -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="filter-year">Periodo Fiscal:</label>
+          <select id="filter-year" onchange="loadDashboardData()">
+            <option value="">Histórico Consolidado (Todos)</option>
+            <option value="2026" selected>Año 2026 (Actual)</option>
+            <option value="2025">Año 2025</option>
+            <option value="2024">Año 2024</option>
+            <option value="2023">Año 2023</option>
+            <option value="2022">Año 2022</option>
+            <option value="2021">Año 2021</option>
+            <option value="2018">Año 2018 (Olist)</option>
+            <option value="2017">Año 2017 (Olist)</option>
+            <option value="2011">Año 2011 (UCI Retail)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-source">Fuente Transaccional:</label>
+          <select id="filter-source" onchange="loadDashboardData()">
+            <option value="">Todas las Fuentes (Cruce Multifuente)</option>
+            <option value="THELOOK">TheLook eCommerce (Global Digital)</option>
+            <option value="OLIST">Olist (Marketplace Brasil)</option>
+            <option value="UCI_RETAIL">UCI Online Retail (Mayorista UK)</option>
+          </select>
+        </div>
+
+        <button class="btn-refresh" onclick="loadDashboardData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Actualizar Datos
+        </button>
+      </div>
+
+      <!-- Tarjetas de KPIs Principales (Matriz Ejecutiva 3x2) -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-revenue">💵</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">Ingresos Netos (USD)</span>
+            <span class="kpi-value" id="kpi-revenue">$--</span>
+            <span class="kpi-sub" id="kpi-gross-sub">Ingreso Bruto: $--</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-orders">📦</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">Volumen de Pedidos</span>
+            <span class="kpi-value" id="kpi-orders">--</span>
+            <span class="kpi-sub" id="kpi-units-sub">Unidades vendidas: --</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-ticket">🎯</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">Ticket Promedio (USD)</span>
+            <span class="kpi-value" id="kpi-ticket">$--</span>
+            <span class="kpi-sub">Promedio neto por transacción</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-margin">📈</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">Margen Bruto Estimado</span>
+            <span class="kpi-value" id="kpi-margin">$--</span>
+            <span class="kpi-sub" id="kpi-margin-pct">Margen operativo: --%</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-logistics">⏱️</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">SLA Entregas a Tiempo</span>
+            <span class="kpi-value" id="kpi-ontime">--%</span>
+            <span class="kpi-sub" id="kpi-ontime-sub">Cumplimiento logístico comprometido</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-quality">🔄</div>
+          <div class="kpi-meta">
+            <span class="kpi-title">Tasa de Devoluciones</span>
+            <span class="kpi-value" id="kpi-cancellations">--%</span>
+            <span class="kpi-sub" id="kpi-cancellations-sub">Cancelaciones y retornos sobre líneas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila de Gráficos y Métricas Operativas -->
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-header">
+            <h3>Distribución de Ventas por Fuente Transaccional</h3>
+            <span class="chart-sub">Comparativa TheLook, Olist y UCI Retail en USD</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="chart-sources"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <div class="chart-header">
+            <h3>Top Unidades de Negocio (Líneas Comerciales)</h3>
+            <span class="chart-sub">Ingresos netos por categoría homologada</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="chart-units"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Métricas Logísticas y de Transporte -->
+      <div class="operations-bar">
+        <div class="op-stat">
+          <span class="op-label">Flete Promedio por Pedido:</span>
+          <span class="op-value" id="op-freight-avg">$-- / orden</span>
+        </div>
+        <div class="op-divider"></div>
+        <div class="op-stat">
+          <span class="op-label">Tiempo Promedio de Entrega:</span>
+          <span class="op-value" id="op-delivery-hours">-- horas</span>
+        </div>
+        <div class="op-divider"></div>
+        <div class="op-stat">
+          <span class="op-label">Data Mart Fuente:</span>
+          <span class="op-value highlight">lumina_gold.mart_cross_source_intelligence</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: AGENTE CONVERSACIONAL IA -->
+    <section id="tab-agent" class="tab-content">
+      <div class="agent-layout">
+        <!-- Panel Izquierdo: Info de Lulita y Sugerencias -->
+        <div class="agent-sidebar">
+          <div class="agent-profile">
+            <div class="agent-avatar">L</div>
+            <h3>Lulita</h3>
+            <p class="agent-desc">Copiloto corporativo de Inteligencia Comercial y Analítica de Datos para RetailSmart Global.</p>
+            <div class="agent-badge">Google Cloud CES · Gemini</div>
+          </div>
+
+          <div class="agent-capabilities">
+            <h4>Herramientas Activas (OpenAPI):</h4>
+            <ul class="tool-list">
+              <li><code>get_summary</code> (KPIs y márgenes)</li>
+              <li><code>get_sales_by_source</code> (Cruce multifuente)</li>
+              <li><code>get_sales_by_unit</code> (12 Unidades de Negocio)</li>
+              <li><code>get_sales_trend</code> (Tendencia y crecimiento)</li>
+              <li><code>get_logistics_summary</code> (Fletes y SLA logístico)</li>
+            </ul>
+          </div>
+
+          <div class="quick-questions">
+            <h4>Preguntas Frecuentes Sugeridas:</h4>
+            <button class="btn-prompt" onclick="askPreset('¿Cuáles fueron los resultados comerciales consolidados de 2026?')">
+              📊 Resultados comerciales 2026
+            </button>
+            <button class="btn-prompt" onclick="askPreset('¿Qué fuente de datos tuvo mayores ventas históricas?')">
+              🌐 Comparativa TheLook vs Olist vs UCI
+            </button>
+            <button class="btn-prompt" onclick="askPreset('¿Cómo le fue a la ropa de mujer en el último año?')">
+              👗 Ventas Moda Femenina 2026
+            </button>
+            <button class="btn-prompt" onclick="askPreset('¿Cuál es la unidad de negocio con mayores ventas en 2026?')">
+              🏆 Top Unidades de Negocio 2026
+            </button>
+            <button class="btn-prompt" onclick="askPreset('¿Cuáles son los costos de flete y el tiempo promedio de entrega?')">
+              🚚 Costos de flete y tiempos de entrega
+            </button>
+            <button class="btn-prompt" onclick="askPreset('¿Cuál es la tasa de entregas a tiempo y cancelaciones?')">
+              ⏱️ SLA logístico y devoluciones
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Conversación en Vivo con Lulita -->
+        <div class="agent-chatbox">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-message bot">
+              <div class="message-avatar">L</div>
+              <div class="message-body">
+                <p><strong>¡Hola! Soy Lulita</strong>, tu copiloto de analítica e inteligencia comercial para RetailSmart Global.</p>
+                <p>Estoy conectada en tiempo real a los Data Marts de BigQuery Gold. Puedes consultarme sobre ventas anuales, comparativas entre canales (TheLook, Olist, UCI Retail), categorías de moda o métricas operativas de flete y entrega. ¿Qué te gustaría consultar hoy?</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <form class="chat-input-bar" onsubmit="handleChatSubmit(event)">
+            <input type="text" id="chat-input" placeholder="Pregúntale a Lulita (ej. '¿Cómo le fue a la ropa de mujer en el último año?')..." autocomplete="off">
+            <button type="submit" class="btn-send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Google Cloud CX Agent Studio (Dialogflow Messenger Web Widget) -->
+  <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+  <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+  <df-messenger
+    project-id="utec-bigdata-retail-grupo7"
+    agent-id="faf05f08-17e6-49af-898e-0c58ac1234fe"
+    language-code="es"
+    location="us-central1"
+    max-query-length="-1">
+    <df-messenger-chat-bubble chat-title="Lulita - Asistente IA"></df-messenger-chat-bubble>
+  </df-messenger>
+
+  <script src="app.js"></script>
+</body>
+</html>

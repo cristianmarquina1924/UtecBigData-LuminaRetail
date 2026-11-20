@@ -1,0 +1,116 @@
+<svg width="1200" height="650" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg" style="background:#0F172A; font-family:'Segoe UI', Inter, sans-serif;">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="thelookGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- TITULO PRINCIPAL -->
+  <rect x="0" y="0" width="1200" height="70" fill="url(#headerGrad)"/>
+  <text x="600" y="42" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ARQUITECTURA DE INTEGRACIÓN Y CRUCE MULTIFUENTE · LUMINA RETAIL</text>
+
+  <!-- CAPA 1: FUENTES CRUDA / BRONZE -->
+  <rect x="40" y="90" width="320" height="520" rx="12" fill="#1E293B" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="40" y="90" width="320" height="40" rx="12" fill="#334155"/>
+  <text x="200" y="116" font-size="14" font-weight="bold" fill="#38BDF8" text-anchor="middle">1. FUENTES DE DATOS &amp; BRONZE GCS</text>
+
+  <!-- Card TheLook -->
+  <rect x="60" y="150" width="280" height="120" rx="8" fill="#0F172A" stroke="#0284C7" stroke-width="1.5"/>
+  <text x="75" y="175" font-size="14" font-weight="bold" fill="#38BDF8">TheLook eCommerce</text>
+  <text x="75" y="195" font-size="11" fill="#94A3B8">• BigQuery Public Data (Native)</text>
+  <text x="75" y="215" font-size="11" fill="#94A3B8">• Ventas Digitales Globales (USA/Intl)</text>
+  <text x="75" y="235" font-size="11" fill="#94A3B8">• 181,610 líneas de órdenes reales</text>
+  <text x="75" y="255" font-size="11" fill="#4ADE80">✔ Conectado a BigQuery</text>
+
+  <!-- Card Olist -->
+  <rect x="60" y="290" width="280" height="120" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="1.5"/>
+  <text x="75" y="315" font-size="14" font-weight="bold" fill="#34D399">Kaggle Brazilian E-Commerce (Olist)</text>
+  <text x="75" y="335" font-size="11" fill="#94A3B8">• Bucket: gs://...-bronze/olist/</text>
+  <text x="75" y="355" font-size="11" fill="#94A3B8">• Marketplace, Vendedores y Fletes</text>
+  <text x="75" y="375" font-size="11" fill="#94A3B8">• 112,650 ítems reales en Bronze</text>
+  <text x="75" y="395" font-size="11" fill="#4ADE80">✔ Ingesta a Cloud Storage</text>
+
+  <!-- Card UCI Retail -->
+  <rect x="60" y="430" width="280" height="120" rx="8" fill="#0F172A" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="75" y="455" font-size="14" font-weight="bold" fill="#FBBF24">UCI Online Retail Dataset</text>
+  <text x="75" y="475" font-size="11" fill="#94A3B8">• Bucket: gs://...-bronze/uci_retail/</text>
+  <text x="75" y="495" font-size="11" fill="#94A3B8">• Transaccional Histórico B2B (44 MB)</text>
+  <text x="75" y="515" font-size="11" fill="#94A3B8">• 541,909 registros CSV reales</text>
+  <text x="75" y="535" font-size="11" fill="#4ADE80">✔ Ingesta a Cloud Storage</text>
+
+  <!-- FLECHAS CONEXION 1 A 2 -->
+  <path d="M 360 210 L 430 210" stroke="#0284C7" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 360 350 L 430 350" stroke="#10B981" stroke-width="3" fill="none"/>
+  <path d="M 360 490 L 430 490" stroke="#F59E0B" stroke-width="3" fill="none"/>
+
+  <!-- CAPA 2: SILVER LAKEHOUSE & CLEANING -->
+  <rect x="440" y="90" width="330" height="520" rx="12" fill="#1E293B" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="440" y="90" width="330" height="40" rx="12" fill="#334155"/>
+  <text x="605" y="116" font-size="14" font-weight="bold" fill="#E2E8F0" text-anchor="middle">2. CAPA SILVER: LIMPIEZA &amp; HOMOLOGACIÓN</text>
+
+  <rect x="460" y="150" width="290" height="120" rx="8" fill="#0F172A" stroke="#0284C7" stroke-width="1"/>
+  <text x="475" y="175" font-size="13" font-weight="bold" fill="#38BDF8">stg_thelook_orders_clean</text>
+  <text x="475" y="195" font-size="11" fill="#94A3B8">• Deduplicación QUALIFY ROW_NUMBER()</text>
+  <text x="475" y="215" font-size="11" fill="#94A3B8">• Partición: DATE(created_at)</text>
+  <text x="475" y="235" font-size="11" fill="#94A3B8">• Filas verificadas: 125,136</text>
+  <text x="475" y="255" font-size="11" fill="#38BDF8">Dataset: lumina_silver</text>
+
+  <rect x="460" y="290" width="290" height="120" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="1"/>
+  <text x="475" y="315" font-size="13" font-weight="bold" fill="#34D399">stg_olist_orders_items</text>
+  <text x="475" y="335" font-size="11" fill="#94A3B8">• Cálculo de horas SLA entrega real</text>
+  <text x="475" y="355" font-size="11" fill="#94A3B8">• Moneda BRL y fechas NULL reales</text>
+  <text x="475" y="375" font-size="11" fill="#94A3B8">• Filas verificadas: 112,650</text>
+  <text x="475" y="395" font-size="11" fill="#34D399">Dataset: lumina_silver</text>
+
+  <rect x="460" y="430" width="290" height="120" rx="8" fill="#0F172A" stroke="#F59E0B" stroke-width="1"/>
+  <text x="475" y="455" font-size="13" font-weight="bold" fill="#FBBF24">stg_uci_retail_transactions</text>
+  <text x="475" y="475" font-size="11" fill="#94A3B8">• Devoluciones con signo negativo contable</text>
+  <text x="475" y="495" font-size="11" fill="#94A3B8">• Retención CustomerID nulos, unit_price &gt; 0</text>
+  <text x="475" y="515" font-size="11" fill="#94A3B8">• Filas verificadas: 539,392</text>
+  <text x="475" y="535" font-size="11" fill="#FBBF24">Dataset: lumina_silver</text>
+
+  <!-- FLECHAS CONEXION 2 A 3 -->
+  <path d="M 770 210 L 830 290" stroke="#6366F1" stroke-width="2.5" fill="none"/>
+  <path d="M 770 350 L 830 350" stroke="#6366F1" stroke-width="2.5" fill="none"/>
+  <path d="M 770 490 L 830 410" stroke="#6366F1" stroke-width="2.5" fill="none"/>
+
+  <!-- CAPA 3: GOLD UNIFICADA (CRUCE TOTAL) -->
+  <rect x="830" y="90" width="330" height="520" rx="12" fill="#1E293B" stroke="#D97706" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="830" y="90" width="330" height="40" rx="12" fill="url(#goldGrad)"/>
+  <text x="995" y="116" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3. CAPA GOLD: CRUCE MULTIFUENTE</text>
+
+  <!-- Fact Table Unificada -->
+  <rect x="850" y="150" width="290" height="200" rx="8" fill="#0F172A" stroke="#F59E0B" stroke-width="2"/>
+  <text x="865" y="175" font-size="13" font-weight="bold" fill="#FBBF24">fact_multisource_unified_sales</text>
+  <text x="865" y="195" font-size="11" fill="#E2E8F0">TABLA DE HECHOS UNIFICADA (3 FUENTES)</text>
+  <text x="865" y="215" font-size="11" fill="#94A3B8">• Cruce: THELOOK + OLIST + UCI_RETAIL</text>
+  <text x="865" y="235" font-size="11" fill="#94A3B8">• Homologado: 12 Unidades de Negocio</text>
+  <text x="865" y="255" font-size="11" fill="#94A3B8">• Partición: DATE(sale_date)</text>
+  <text x="865" y="275" font-size="11" fill="#94A3B8">• Cluster: source_system, business_unit</text>
+  <text x="865" y="295" font-size="12" font-weight="bold" fill="#4ADE80">✔ 833,648 FILAS REALES</text>
+  <text x="865" y="315" font-size="11" fill="#38BDF8">Dataset: lumina_gold (139.54 MB)</text>
+
+  <!-- Mart Benchmark -->
+  <rect x="850" y="370" width="290" height="190" rx="8" fill="#0F172A" stroke="#818CF8" stroke-width="1.5"/>
+  <text x="865" y="395" font-size="13" font-weight="bold" fill="#818CF8">mart_cross_source_intelligence</text>
+  <text x="865" y="415" font-size="11" fill="#E2E8F0">BENCHMARK EJECUTIVO MULTIFUENTE</text>
+  <text x="865" y="435" font-size="11" fill="#94A3B8">• Ticket Promedio ($) ponderado</text>
+  <text x="865" y="455" font-size="11" fill="#94A3B8">• Margen Bruto (%) comparado</text>
+  <text x="865" y="475" font-size="11" fill="#94A3B8">• Tasa de Cancelación / Devolución (%)</text>
+  <text x="865" y="495" font-size="11" fill="#94A3B8">• Tiempos y Fletes de Entrega</text>
+  <text x="865" y="515" font-size="12" font-weight="bold" fill="#4ADE80">✔ 1,030 AGREGACIONES MENSUALES</text>
+  <text x="865" y="535" font-size="11" fill="#38BDF8">Dataset: lumina_gold (Looker Ready)</text>
+
+</svg>

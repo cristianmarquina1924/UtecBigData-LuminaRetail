@@ -1,0 +1,244 @@
+{
+  "info": {
+    "_postman_id": "b3e9d4a8-6f12-4d2a-8b89-lumina-retail-p3",
+    "name": "Lumina Retail Analytics API (Grupo 7 - P3)",
+    "description": "Colección oficial para la verificación y pruebas de la API REST analítica conectada a BigQuery Gold (utec-bigdata-retail-grupo7).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://lumina-retail-analytics-616989017537.us-central1.run.app",
+      "type": "string",
+      "description": "URL oficial de producción en Google Cloud Run."
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check & BigQuery Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Verifica si el servicio está activo y si la Service Account ag-deployer tiene conexión exitosa a BigQuery."
+      }
+    },
+    {
+      "name": "2. KPIs Summary (Año 2026)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/kpis/summary?year=2026",
+          "host": ["{{base_url}}"],
+          "path": ["kpis", "summary"],
+          "query": [
+            {
+              "key": "year",
+              "value": "2026",
+              "description": "Año fiscal (2026, 2025, 2024... o vacío para histórico)"
+            },
+            {
+              "key": "source_system",
+              "value": "",
+              "disabled": true,
+              "description": "Opcional: THELOOK, OLIST, UCI_RETAIL"
+            },
+            {
+              "key": "business_unit_id",
+              "value": "",
+              "disabled": true,
+              "description": "Opcional: UN-01-MODA-FORMAL, UN-02-MODA-CASUAL, etc."
+            }
+          ]
+        },
+        "description": "Retorna ingresos netos, brutos, pedidos, ticket promedio, margen bruto estimado y tasas operativas."
+      }
+    },
+    {
+      "name": "3. Comparativa Multifuente (TheLook vs Olist vs UCI)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/sales/by-source",
+          "host": ["{{base_url}}"],
+          "path": ["sales", "by-source"],
+          "query": [
+            {
+              "key": "year",
+              "value": "2026",
+              "disabled": true,
+              "description": "Filtrar por año o dejar vacío para consolidado total"
+            }
+          ]
+        },
+        "description": "Calcula el desglose y porcentaje de participación (% share) entre TheLook, Olist y UCI Retail."
+      }
+    },
+    {
+      "name": "4. Ventas por Unidad de Negocio (Top Categorías)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/sales/by-unit?year=2026",
+          "host": ["{{base_url}}"],
+          "path": ["sales", "by-unit"],
+          "query": [
+            {
+              "key": "year",
+              "value": "2026",
+              "description": "Año fiscal a evaluar"
+            },
+            {
+              "key": "source_system",
+              "value": "THELOOK",
+              "disabled": true,
+              "description": "Opcional: Filtrar por una fuente específica"
+            }
+          ]
+        },
+        "description": "Desglosa las ventas y margen para las 12 Unidades de Negocio homologadas."
+      }
+    },
+    {
+      "name": "5. Tendencia Histórica de Ventas (2020 - 2026)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/sales/trend?start_year=2024&end_year=2026&granularity=yearly",
+          "host": ["{{base_url}}"],
+          "path": ["sales", "trend"],
+          "query": [
+            {
+              "key": "start_year",
+              "value": "2024",
+              "description": "Año de inicio"
+            },
+            {
+              "key": "end_year",
+              "value": "2026",
+              "description": "Año de fin"
+            },
+            {
+              "key": "granularity",
+              "value": "yearly",
+              "description": "yearly o monthly"
+            }
+          ]
+        },
+        "description": "Retorna la serie de tiempo anual o mensual de ingresos y órdenes."
+      }
+    },
+    {
+      "name": "6. Resumen Logístico y Costos de Flete (Año 2026)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/logistics/summary?year=2026",
+          "host": ["{{base_url}}"],
+          "path": ["logistics", "summary"],
+          "query": [
+            {
+              "key": "year",
+              "value": "2026",
+              "description": "Año fiscal (2026, 2025... o vacío para histórico)"
+            },
+            {
+              "key": "source_system",
+              "value": "",
+              "disabled": true,
+              "description": "Opcional: THELOOK, OLIST, UCI_RETAIL"
+            }
+          ]
+        },
+        "description": "Retorna métricas de eficiencia logística, costos de transporte (fletes), tiempo promedio de entrega en horas y SLA de cumplimiento."
+      }
+    },
+    {
+      "name": "7. Metadatos y Opciones de Filtros",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Bypass-Tunnel-Reminder",
+            "value": "true",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/metadata/filters",
+          "host": ["{{base_url}}"],
+          "path": ["metadata", "filters"]
+        },
+        "description": "Retorna la lista de años disponibles, fuentes transaccionales y el catálogo de las 12 Unidades de Negocio."
+      }
+    },
+    {
+      "name": "8. Agente IA (Lulita) - Chat Conversacional (CX Agent Studio)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"en ecuador como fueron las ventas?\",\n  \"session_id\": \"postman-test-1\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/agent/chat",
+          "host": ["{{base_url}}"],
+          "path": ["agent", "chat"]
+        },
+        "description": "Interacción conversacional en lenguaje natural con el Agente Lulita respaldado por Google Cloud CX Agent Studio (Dialogflow CX Generative Playbook) y Gemini."
+      }
+    }
+  ]
+}

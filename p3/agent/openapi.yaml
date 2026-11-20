@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  title: Lumina Retail Agent Tools API
+  description: Herramientas OpenAPI para Lumina Business Assistant en CX Agent Studio / Google Cloud CES.
+  version: 1.0.0
+servers:
+  - url: https://lumina-retail-analytics-616989017537.us-central1.run.app
+    description: Servidor Oficial de Producción en Google Cloud Run
+  - url: http://localhost:8080
+    description: Servidor de Desarrollo Local
+paths:
+  /kpis/summary:
+    get:
+      operationId: get_summary
+      summary: Consultar KPIs e indicadores generales consolidados
+      description: Retorna métricas agregadas de ventas netas, pedidos, ticket promedio, margen bruto estimado y tasas operativas en USD.
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Año fiscal a consultar (ej. 2026, 2025, 2024...)
+        - name: source_system
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [THELOOK, OLIST, UCI_RETAIL]
+          description: Sistema de origen específico
+        - name: business_unit_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Código de la unidad de negocio (ej. UN-01-MODA-FORMAL)
+      responses:
+        '200':
+          description: Resumen de KPIs calculado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_orders:
+                    type: integer
+                  net_revenue_usd:
+                    type: number
+                  gross_revenue_usd:
+                    type: number
+                  total_units_sold:
+                    type: integer
+                  average_ticket_usd:
+                    type: number
+                  total_estimated_margin_usd:
+                    type: number
+                  estimated_margin_pct:
+                    type: number
+                  on_time_delivery_rate_pct:
+                    type: number
+                  cancellation_return_rate_pct:
+                    type: number
+
+  /sales/by-source:
+    get:
+      operationId: get_sales_by_source
+      summary: Comparar ventas y participación entre fuentes de datos
+      description: Retorna la comparativa de ingresos en USD, número de pedidos y porcentaje de participación entre TheLook eCommerce, Olist y UCI Retail.
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Año fiscal a filtrar
+        - name: business_unit_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Código de unidad de negocio a filtrar
+      responses:
+        '200':
+          description: Comparativa multifuente calculada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_net_revenue_usd:
+                    type: number
+                  sources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source_system:
+                          type: string
+                        total_orders:
+                          type: integer
+                        net_revenue_usd:
+                          type: number
+                        total_units_sold:
+                          type: integer
+                        average_ticket_usd:
+                          type: number
+                        share_revenue_pct:
+                          type: number
+
+  /sales/by-unit:
+    get:
+      operationId: get_sales_by_unit
+      summary: Consultar ventas y margen por Unidad de Negocio
+      description: Desglosa los ingresos, volumen de pedidos y margen para cada una de las 12 Unidades de Negocio homologadas.
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Año fiscal a filtrar
+        - name: source_system
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [THELOOK, OLIST, UCI_RETAIL]
+          description: Sistema de origen a filtrar
+      responses:
+        '200':
+          description: Métricas por unidad de negocio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  units:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        business_unit_id:
+                          type: string
+                        business_unit_name:
+                          type: string
+                        total_orders:
+                          type: integer
+                        net_revenue_usd:
+                          type: number
+                        total_units_sold:
+                          type: integer
+                        average_ticket_usd:
+                          type: number
+                        margin_usd:
+                          type: number
+
+  /sales/trend:
+    get:
+      operationId: get_sales_trend
+      summary: Consultar tendencia histórica de ventas
+      description: Retorna la evolución mensual o anual de ingresos netos y pedidos para análisis de estacionalidad y crecimiento.
+      parameters:
+        - name: source_system
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Sistema origen
+        - name: business_unit_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Unidad de negocio
+        - name: start_year
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 2020
+          description: Año inicial
+        - name: end_year
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 2026
+          description: Año final
+        - name: granularity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [monthly, yearly]
+            default: monthly
+          description: Frecuencia de agregación
+      responses:
+        '200':
+          description: Serie de tiempo de ventas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trend:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        period:
+                          type: string
+                        total_orders:
+                          type: integer
+                        net_revenue_usd:
+                          type: number
+                        average_ticket_usd:
+                          type: number
+
+  /logistics/summary:
+    get:
+      operationId: get_logistics_summary
+      summary: Consultar métricas de eficiencia logística y costos de flete
+      description: Retorna el costo total y promedio de flete, tiempo promedio de entrega en horas, tasa de entregas a tiempo (SLA) y cancelaciones.
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Año fiscal a filtrar (ej. 2026, 2025, 2024...)
+        - name: source_system
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [THELOOK, OLIST, UCI_RETAIL]
+          description: Sistema de origen a filtrar
+      responses:
+        '200':
+          description: Resumen logístico calculado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_orders_evaluated:
+                    type: integer
+                  on_time_orders:
+                    type: integer
+                  on_time_delivery_rate_pct:
+                    type: number
+                  cancellation_return_rate_pct:
+                    type: number
+                  total_freight_cost_usd:
+                    type: number
+                  average_freight_cost_usd:
+                    type: number
+                  average_delivery_hours:
+                    type: number
+                  freight_to_revenue_pct:
+                    type: number

@@ -1,0 +1,730 @@
+openapi: 3.1.0
+info:
+  title: Lumina Retail Analytics API
+  description: API REST corporativa para la exposición y consumo de Data Marts analíticos
+    en BigQuery Gold (RetailSmart Global / Lumina Retail).
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      tags:
+      - Sistema
+      summary: Verificar disponibilidad del servicio y conectividad con BigQuery
+      operationId: get_health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /kpis/summary:
+    get:
+      tags:
+      - Inteligencia Comercial
+      summary: Consultar indicadores comerciales consolidados (KPIs)
+      operationId: get_kpis_summary_kpis_summary_get
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año a filtrar (ej. 2026, 2025, 2024...)
+          title: Year
+        description: Año a filtrar (ej. 2026, 2025, 2024...)
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Sistema origen: THELOOK, OLIST, UCI_RETAIL'
+          title: Source System
+        description: 'Sistema origen: THELOOK, OLIST, UCI_RETAIL'
+      - name: business_unit_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'ID Unidad de negocio: UN-01-MODA-FORMAL, UN-02-MODA-CASUAL,
+            etc.'
+          title: Business Unit Id
+        description: 'ID Unidad de negocio: UN-01-MODA-FORMAL, UN-02-MODA-CASUAL,
+          etc.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryKPIs'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /sales/by-source:
+    get:
+      tags:
+      - Inteligencia Comercial
+      summary: Comparar desempeño comercial entre fuentes (TheLook, Olist, UCI)
+      operationId: get_sales_by_source_sales_by_source_get
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año a filtrar
+          title: Year
+        description: Año a filtrar
+      - name: business_unit_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Unidad de negocio a filtrar
+          title: Business Unit Id
+        description: Unidad de negocio a filtrar
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceSalesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /sales/by-unit:
+    get:
+      tags:
+      - Inteligencia Comercial
+      summary: Consultar resultados de ventas por Unidad de Negocio
+      operationId: get_sales_by_unit_sales_by_unit_get
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año a filtrar
+          title: Year
+        description: Año a filtrar
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Sistema origen a filtrar
+          title: Source System
+        description: Sistema origen a filtrar
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitSalesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /sales/trend:
+    get:
+      tags:
+      - Inteligencia Comercial
+      summary: Consultar evolución temporal de ventas (tendencia mensual o anual)
+      operationId: get_sales_trend_sales_trend_get
+      parameters:
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Sistema origen
+          title: Source System
+        description: Sistema origen
+      - name: business_unit_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Unidad de negocio
+          title: Business Unit Id
+        description: Unidad de negocio
+      - name: start_year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año inicial
+          default: 2020
+          title: Start Year
+        description: Año inicial
+      - name: end_year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año final
+          default: 2026
+          title: End Year
+        description: Año final
+      - name: granularity
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(monthly|yearly)$
+          description: 'Granularidad: monthly o yearly'
+          default: monthly
+          title: Granularity
+        description: 'Granularidad: monthly o yearly'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrendResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /logistics/summary:
+    get:
+      tags:
+      - Operaciones & Logística
+      summary: Consultar métricas de eficiencia logística, fletes y tiempos de despacho
+      operationId: get_logistics_summary_logistics_summary_get
+      parameters:
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Año fiscal a filtrar (ej. 2026, 2025, 2024...)
+          title: Year
+        description: Año fiscal a filtrar (ej. 2026, 2025, 2024...)
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Sistema origen: THELOOK, OLIST, UCI_RETAIL'
+          title: Source System
+        description: 'Sistema origen: THELOOK, OLIST, UCI_RETAIL'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogisticsSummaryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /metadata/filters:
+    get:
+      tags:
+      - Sistema
+      summary: Listar filtros y opciones válidas (años, fuentes, unidades)
+      operationId: get_metadata_filters_metadata_filters_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataFiltersResponse'
+  /agent/chat:
+    post:
+      tags:
+      - Agente IA (Lulita)
+      summary: Interacción en lenguaje natural con el Agente Lulita (CX Agent Studio
+        / Gemini)
+      operationId: chat_with_agent_agent_chat_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ChatRequest:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Pregunta en lenguaje natural para Lulita
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+          description: Identificador único de sesión conversacional
+      type: object
+      required:
+      - message
+      title: ChatRequest
+    ChatResponse:
+      properties:
+        reply:
+          type: string
+          title: Reply
+          description: Respuesta analítica generada por el agente
+        session_id:
+          type: string
+          title: Session Id
+          description: ID de sesión activo
+        match_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Match Type
+          description: Tipo de coincidencia de Dialogflow CX (PLAYBOOK / INTENT)
+          default: PLAYBOOK
+        service:
+          type: string
+          title: Service
+          description: Motor de IA generativa de Google Cloud
+          default: Google Cloud CX Agent Studio (Dialogflow CX Generative Playbook)
+        timestamp:
+          type: string
+          title: Timestamp
+          description: Marca de tiempo ISO
+      type: object
+      required:
+      - reply
+      - session_id
+      - timestamp
+      title: ChatResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+          example: healthy
+        service:
+          type: string
+          title: Service
+          example: Lumina Retail Analytics API
+        version:
+          type: string
+          title: Version
+          example: 1.0.0
+        gcp_project:
+          type: string
+          title: Gcp Project
+          example: utec-bigdata-retail-grupo7
+        bigquery_connected:
+          type: boolean
+          title: Bigquery Connected
+          example: true
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - status
+      - service
+      - version
+      - gcp_project
+      - bigquery_connected
+      - timestamp
+      title: HealthResponse
+    LogisticsSummaryResponse:
+      properties:
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Año fiscal consultado
+        source_system:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source System
+          description: Fuente transaccional filtrada
+        total_orders_evaluated:
+          type: integer
+          title: Total Orders Evaluated
+          description: Total de pedidos evaluables para logística
+        on_time_orders:
+          type: integer
+          title: On Time Orders
+          description: Pedidos entregados dentro del SLA comprometido
+        on_time_delivery_rate_pct:
+          type: number
+          title: On Time Delivery Rate Pct
+          description: Tasa de cumplimiento de entregas a tiempo (%)
+        cancellation_return_rate_pct:
+          type: number
+          title: Cancellation Return Rate Pct
+          description: Tasa de cancelaciones y devoluciones (%)
+        total_freight_cost_usd:
+          type: number
+          title: Total Freight Cost Usd
+          description: Costo total acumulado de fletes y transporte (USD)
+        average_freight_cost_usd:
+          type: number
+          title: Average Freight Cost Usd
+          description: Costo promedio de flete por pedido (USD)
+        average_delivery_hours:
+          type: number
+          title: Average Delivery Hours
+          description: Tiempo promedio de entrega en horas
+        freight_to_revenue_pct:
+          type: number
+          title: Freight To Revenue Pct
+          description: Proporción del costo logístico sobre los ingresos netos (%)
+      type: object
+      required:
+      - total_orders_evaluated
+      - on_time_orders
+      - on_time_delivery_rate_pct
+      - cancellation_return_rate_pct
+      - total_freight_cost_usd
+      - average_freight_cost_usd
+      - average_delivery_hours
+      - freight_to_revenue_pct
+      title: LogisticsSummaryResponse
+    MetadataFiltersResponse:
+      properties:
+        available_years:
+          items:
+            type: integer
+          type: array
+          title: Available Years
+        available_sources:
+          items:
+            type: string
+          type: array
+          title: Available Sources
+        available_business_units:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Available Business Units
+      type: object
+      required:
+      - available_years
+      - available_sources
+      - available_business_units
+      title: MetadataFiltersResponse
+    SourceSalesItem:
+      properties:
+        source_system:
+          type: string
+          title: Source System
+          description: Nombre del sistema transaccional
+        total_orders:
+          type: integer
+          title: Total Orders
+          description: Total de pedidos
+        net_revenue_usd:
+          type: number
+          title: Net Revenue Usd
+          description: Ingresos netos en USD
+        total_units_sold:
+          type: integer
+          title: Total Units Sold
+          description: Unidades vendidas
+        average_ticket_usd:
+          type: number
+          title: Average Ticket Usd
+          description: Ticket promedio en USD
+        share_revenue_pct:
+          type: number
+          title: Share Revenue Pct
+          description: Participación porcentual en las ventas totales
+      type: object
+      required:
+      - source_system
+      - total_orders
+      - net_revenue_usd
+      - total_units_sold
+      - average_ticket_usd
+      - share_revenue_pct
+      title: SourceSalesItem
+    SourceSalesResponse:
+      properties:
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+        total_net_revenue_usd:
+          type: number
+          title: Total Net Revenue Usd
+        sources:
+          items:
+            $ref: '#/components/schemas/SourceSalesItem'
+          type: array
+          title: Sources
+      type: object
+      required:
+      - total_net_revenue_usd
+      - sources
+      title: SourceSalesResponse
+    SummaryKPIs:
+      properties:
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Año filtrado o 'Todos' si es nulo
+        source_system:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source System
+          description: Fuente transaccional filtrada (THELOOK, OLIST, UCI_RETAIL)
+        business_unit_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Business Unit Id
+          description: Unidad de negocio filtrada
+        total_orders:
+          type: integer
+          title: Total Orders
+          description: Número total de pedidos
+        net_revenue_usd:
+          type: number
+          title: Net Revenue Usd
+          description: Ingresos netos en dólares (USD)
+        gross_revenue_usd:
+          type: number
+          title: Gross Revenue Usd
+          description: Ingresos brutos en dólares (USD)
+        total_units_sold:
+          type: integer
+          title: Total Units Sold
+          description: Unidades netas vendidas
+        average_ticket_usd:
+          type: number
+          title: Average Ticket Usd
+          description: Ticket promedio por pedido en USD
+        total_estimated_margin_usd:
+          type: number
+          title: Total Estimated Margin Usd
+          description: Margen bruto estimado acumulado en USD
+        estimated_margin_pct:
+          type: number
+          title: Estimated Margin Pct
+          description: Porcentaje de margen bruto sobre ingresos
+        on_time_delivery_rate_pct:
+          type: number
+          title: On Time Delivery Rate Pct
+          description: Tasa de entregas a tiempo (%)
+        cancellation_return_rate_pct:
+          type: number
+          title: Cancellation Return Rate Pct
+          description: Tasa de cancelaciones y devoluciones (%)
+      type: object
+      required:
+      - total_orders
+      - net_revenue_usd
+      - gross_revenue_usd
+      - total_units_sold
+      - average_ticket_usd
+      - total_estimated_margin_usd
+      - estimated_margin_pct
+      - on_time_delivery_rate_pct
+      - cancellation_return_rate_pct
+      title: SummaryKPIs
+    TrendPoint:
+      properties:
+        period:
+          type: string
+          title: Period
+          description: Periodo en formato YYYY-MM o YYYY
+        total_orders:
+          type: integer
+          title: Total Orders
+        net_revenue_usd:
+          type: number
+          title: Net Revenue Usd
+        average_ticket_usd:
+          type: number
+          title: Average Ticket Usd
+      type: object
+      required:
+      - period
+      - total_orders
+      - net_revenue_usd
+      - average_ticket_usd
+      title: TrendPoint
+    TrendResponse:
+      properties:
+        source_system:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source System
+        business_unit_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Business Unit Id
+        granularity:
+          type: string
+          title: Granularity
+          example: monthly
+        trend:
+          items:
+            $ref: '#/components/schemas/TrendPoint'
+          type: array
+          title: Trend
+      type: object
+      required:
+      - granularity
+      - trend
+      title: TrendResponse
+    UnitSalesItem:
+      properties:
+        business_unit_id:
+          type: string
+          title: Business Unit Id
+          description: Código de la unidad de negocio
+        business_unit_name:
+          type: string
+          title: Business Unit Name
+          description: Nombre descriptivo de la unidad
+        total_orders:
+          type: integer
+          title: Total Orders
+        net_revenue_usd:
+          type: number
+          title: Net Revenue Usd
+        total_units_sold:
+          type: integer
+          title: Total Units Sold
+        average_ticket_usd:
+          type: number
+          title: Average Ticket Usd
+        margin_usd:
+          type: number
+          title: Margin Usd
+      type: object
+      required:
+      - business_unit_id
+      - business_unit_name
+      - total_orders
+      - net_revenue_usd
+      - total_units_sold
+      - average_ticket_usd
+      - margin_usd
+      title: UnitSalesItem
+    UnitSalesResponse:
+      properties:
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+        source_system:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source System
+        units:
+          items:
+            $ref: '#/components/schemas/UnitSalesItem'
+          type: array
+          title: Units
+      type: object
+      required:
+      - units
+      title: UnitSalesResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
